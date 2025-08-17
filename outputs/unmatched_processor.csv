@@ -1,0 +1,12 @@
+txn_id,user_id_p,merchant,amount_p,currency_p,created_at,settled_at,status_p,dup_flag_p,entry_id,external_id,user_id_l,amount_l,currency_l,posting_date,account,status_l,dup_flag_l,_merge,match_flag
+T100008,U0072,RELAY,11.57,USD,2025-06-29,2025-06-30,missing_test_only,False,,,,,,,,,,left_only,False
+T100030,U0189,WAYNE ENTERPRISES,165.55,USD,2025-05-25,2025-05-27,missing_test_only,False,,,,,,,,,,left_only,False
+T100107,U0144,HONEYBOOK,420.05,USD,2025-05-13,2025-05-14,missing_test_only,False,,,,,,,,,,left_only,False
+T100109,U0164,WIX,493.39,USD,2025-05-22,2025-05-22,missing_test_only,False,,,,,,,,,,left_only,False
+T100158,U0055,WAYNE ENTERPRISES,358.11,USD,2025-06-15,2025-06-17,missing_test_only,False,,,,,,,,,,left_only,False
+T100196,U0042,WAYNE ENTERPRISES,176.12,USD,2025-05-10,2025-05-11,settled,False,,,,,,,,,,left_only,False
+T100243,U0186,RELAY,307.15,USD,2025-06-03,2025-06-05,missing_test_only,False,,,,,,,,,,left_only,False
+T100330,U0083,WIX,308.07,USD,2025-05-11,2025-05-12,missing_test_only,False,,,,,,,,,,left_only,False
+T100389,U0038,HONEYBOOK,96.37,USD,2025-06-25,2025-06-25,missing_test_only,False,,,,,,,,,,left_only,False
+T100431,U0133,BILL.COM,111.94,USD,2025-06-29,2025-07-01,missing_test_only,False,,,,,,,,,,left_only,False
+T100448,U0057,BILL.COM,451.37,USD,2025-05-28,2025-05-30,missing_test_only,False,,,,,,,,,,left_only,False
