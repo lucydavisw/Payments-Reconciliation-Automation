@@ -1,4 +1,4 @@
-# Payments Reconciliation Automation (Mini-Project)
+# Payments Reconciliation Automation Project
 
 This project automates reconciliation between a payment processor feed and an internal ledger, applying configurable tolerances for date and amount differences. It demonstrates the same reconciliation principles used by financial institutions to detect mismatches, duplicates, and exceptions in payment data.
 
