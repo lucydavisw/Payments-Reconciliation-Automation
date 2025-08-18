@@ -1,62 +1,60 @@
-import json, sys
+import json
 from pathlib import Path
-import pandas as pd
 import matplotlib.pyplot as plt
+import pandas as pd
 
-OUT = Path("reports"); OUT.mkdir(exist_ok=True, parents=True)
+# Paths
+BASE = Path(__file__).resolve().parent.parent
+DATA = BASE / "data"
+OUT = BASE / "outputs"
 
-summary = json.loads(Path("outputs/summary.json").read_text())
-exceptions = pd.read_csv("outputs/exceptions.csv")
+def main():
+    # Load summary.json
+    with open(OUT / "summary.json", "r") as f:
+        summary = json.load(f)
 
-# 1) KPI table (Markdown)
-kpi_md = "\n".join([
-  "| Metric | Value |",
-  "|---|---:|",
-  f"| Total processor rows | {summary['total_processor_rows']} |",
-  f"| Total ledger rows | {summary['total_ledger_rows']} |",
-  f"| Matched rows | {summary['matched_rows']} |",
-  f"| Match rate (%) | {summary['match_rate_pct']} |",
-  f"| Exceptions rows | {summary['exceptions_rows']} |",
-])
+    # Convert summary to DataFrame for charting
+    df = pd.DataFrame([summary])
 
-# 2) Exception breakdown (top categories)
-exc = exceptions["exception_reasons"].fillna("undetermined").str.get_dummies(";").sum().sort_values(ascending=False)
-exc = exc[exc>0]
-exc_df = exc.reset_index().rename(columns={"index":"exception_type",0:"count"})
+    # Make chart of exceptions by type (if available)
+    exc_series = pd.Series(summary.get("exceptions_by_type", {}))
 
-# Plot bar chart
-plt.figure(figsize=(8,4.5))
-exc.plot(kind="bar", x="exception_type", y="count", legend=False, rot=30)
-plt.title("Exceptions by Type")
-plt.tight_layout()
-plt.savefig(OUT/"exceptions_by_type.png", dpi=160)
-plt.close()
+    chart_note = ""
+    if exc_series.sum() > 0:
+        exc_df = exc_series.reset_index().rename(
+            columns={"index": "exception_type", 0: "count"}
+        )
+        plt.figure(figsize=(8, 4.5))
+        plt.bar(exc_df["exception_type"], exc_df["count"])
+        plt.title("Exceptions by Type")
+        plt.xticks(rotation=30, ha="right")
+        plt.tight_layout()
+        plt.savefig(OUT / "exceptions_by_type.png", dpi=150)
+        plt.close()
+        chart_note = "![Exceptions by type](exceptions_by_type.png)"
 
-# Sample rows (first 10)
-sample_exc_md = exceptions.head(10).to_markdown(index=False)
+    # Markdown report
+    md = f"""# Payments Reconciliation – Test Report
 
-# 3) Build report.md
-md = f"""# Payments Reconciliation – Test Report
+## Summary Metrics
+- Processor rows: {summary.get("total_processor_rows")}
+- Ledger rows: {summary.get("total_ledger_rows")}
+- Matched rows: {summary.get("matched_rows")}
+- Match rate: {summary.get("match_rate_pct"):.2f}%
+- Exceptions: {summary.get("exceptions_rows")}
 
-**Objective.** Validate two-pass reconciliation with amount tolerance and date window.  
-**Controls.** `amount_tolerance={0.05}`, `date_window={2}` (days).
+## Exceptions Breakdown
+{chart_note if chart_note else "No exception chart generated."}
 
-## 1) KPIs
-{kpi_md}
+## Notes
+This test run demonstrates reconciliation between processor and ledger with tolerances.
+"""
 
-## 2) Exception Breakdown
-![chart](exceptions_by_type.png)
+    with open(OUT / "report.md", "w") as f:
+        f.write(md)
 
-Top exception types:
+    print("Report written ->", OUT / "report.md")
 
-{exc_df.to_markdown(index=False)}
 
-## 3) Sample Exceptions (first 10)
-{sample_exc_md}
-
-## 4) Repro Steps
-```bash
-python scripts/generate_data.py
-python scripts/reconcile.py --amount-tolerance 0.05 --date-window 2 --sqlite outputs/recon.db
-python scripts/make_report.py
-
+if __name__ == "__main__":
+    main()
